@@ -1,23 +1,27 @@
+import 'jsdom-global/register';
 import sinon from 'sinon';
 import React from 'react';
 import { expect } from 'chai';
-import { mount, shallow } from 'enzyme';
+import Enzyme, { mount, shallow } from 'enzyme';
+import Adapter from 'enzyme-adapter-react-16';
 
 import Highlightable, { Range } from '../src';
+
+Enzyme.configure({ adapter: new Adapter() });
 
 describe('Highlightable component', function () {
   describe('with basic props', function () {
     it('should render the text without highlight', () => {
       const onMouseOverHighlightedWord = sinon.spy();
       const onTextHighlighted = sinon.spy();
-      const range = [];
+      const range: Range[] = [];
       const text = 'test the text';
 
       const wrapper = mount(<Highlightable
            ranges={range}
            enabled={true}
            onTextHighlighted={onTextHighlighted}
-           name={'test'}
+           id={'test'}
            onMouseOverHighlightedWord={onMouseOverHighlightedWord}
            rangeRenderer={(a, b) => b}
            highlightStyle={{
@@ -26,7 +30,7 @@ describe('Highlightable component', function () {
            }}
            text={text}
         />);
-
+        console.log("wrapper")
       expect(onMouseOverHighlightedWord).to.have.property('callCount', 0);
       expect(onTextHighlighted).to.have.property('callCount', 0);
 
@@ -35,9 +39,10 @@ describe('Highlightable component', function () {
       expect(wrapper.containsMatchingElement(<span>s</span>)).to.equal(true);
 
       wrapper.find('span').forEach((w, index) => {
-        expect(w.props()['data-position']).to.equal(index);
-        expect(w.props().style).to.equal(undefined);
-        expect(w.props().children).to.equal(text[index]);
+        const props: any = w.props();
+        expect(props['data-position']).to.equal(index);
+        expect(props.style).to.equal(undefined);
+        expect(props.children).to.equal(text[index]);
       });
     });
   });
@@ -53,7 +58,7 @@ describe('Highlightable component', function () {
            ranges={range}
            enabled={true}
            onTextHighlighted={onTextHighlighted}
-           name={'test'}
+           id={'test'}
            onMouseOverHighlightedWord={onMouseOverHighlightedWord}
            rangeRenderer={a => a}
            highlightStyle={{
@@ -71,15 +76,16 @@ describe('Highlightable component', function () {
       expect(wrapper.containsMatchingElement(<span>s</span>)).to.equal(true);
 
       wrapper.find('span').forEach((w, index) => {
+        const props: any = w.props();
         if(index < 6) {
-          expect(w.props()['data-position']).to.equal(index);
-          expect(w.props().style.backgroundColor).to.equal('#ffcc80');
-          expect(w.props().style.enabled).to.equal(true);
-          expect(w.props().children).to.equal(text[index]);
+          expect(props['data-position']).to.equal(index);
+          expect(props.style.backgroundColor).to.equal('#ffcc80');
+          expect(props.style.enabled).to.equal(true);
+          expect(props.children).to.equal(text[index]);
         } else {
-          expect(w.props()['data-position']).to.equal(index);
-          expect(w.props().style).to.equal(undefined);
-          expect(w.props().children).to.equal(text[index]);
+          expect(props['data-position']).to.equal(index);
+          expect(props.style).to.equal(undefined);
+          expect(props.children).to.equal(text[index]);
         }
       });
     });
@@ -89,14 +95,14 @@ describe('Highlightable component', function () {
     it('should highlight text', () => {
       const onMouseOverHighlightedWord = sinon.spy();
       const onTextHighlighted = sinon.spy();
-      const range = [];
+      const range = [] as Range[];
       const text = 'test the text';
 
       const wrapper = mount(<Highlightable
+            id={'test'}
            ranges={range}
            enabled={true}
            onTextHighlighted={onTextHighlighted}
-           name={'test'}
            onMouseOverHighlightedWord={onMouseOverHighlightedWord}
            rangeRenderer={a => a}
            highlightStyle={{
@@ -114,9 +120,10 @@ describe('Highlightable component', function () {
       expect(wrapper.containsMatchingElement(<span>s</span>)).to.equal(true);
 
       wrapper.find('span').forEach((w, index) => {
-        expect(w.props()['data-position']).to.equal(index);
-        expect(w.props().style).to.equal(undefined);
-        expect(w.props().children).to.equal(text[index]);
+        const props: any = w.props();
+        expect(props['data-position']).to.equal(index);
+        expect(props.style).to.equal(undefined);
+        expect(props.children).to.equal(text[index]);
       });
 
       const newRange = [new Range(0, 5)];
@@ -126,15 +133,16 @@ describe('Highlightable component', function () {
       expect(onMouseOverHighlightedWord).to.have.property('callCount', 1);
 
       wrapper.find('span').forEach((w, index) => {
+        const props: any = w.props();
         if(index < 6) {
-          expect(w.props()['data-position']).to.equal(index);
-          expect(w.props().style.backgroundColor).to.equal('#ffcc80');
-          expect(w.props().style.enabled).to.equal(true);
-          expect(w.props().children).to.equal(text[index]);
+          expect(props['data-position']).to.equal(index);
+          expect(props.style.backgroundColor).to.equal('#ffcc80');
+          expect(props.style.enabled).to.equal(true);
+          expect(props.children).to.equal(text[index]);
         } else {
-          expect(w.props()['data-position']).to.equal(index);
-          expect(w.props().style).to.equal(undefined);
-          expect(w.props().children).to.equal(text[index]);
+          expect(props['data-position']).to.equal(index);
+          expect(props.style).to.equal(undefined);
+          expect(props.children).to.equal(text[index]);
         }
       });
     });
@@ -144,14 +152,14 @@ describe('Highlightable component', function () {
     it('should highlight text and keep the smiley at the end of the text', () => {
       const onMouseOverHighlightedWord = sinon.spy();
       const onTextHighlighted = sinon.spy();
-      const range = [];
+      const range: Range[] = [];
       const text = 'test the text 😘';
 
       const wrapper = mount(<Highlightable
            ranges={range}
            enabled={true}
            onTextHighlighted={onTextHighlighted}
-           name={'test'}
+           id={'test'}
            onMouseOverHighlightedWord={onMouseOverHighlightedWord}
            rangeRenderer={a => a}
            highlightStyle={{
@@ -174,7 +182,7 @@ describe('Highlightable component', function () {
            ranges={range}
            enabled={true}
            onTextHighlighted={onTextHighlighted}
-           name={'test'}
+           id={'test'}
            onMouseOverHighlightedWord={onMouseOverHighlightedWord}
            rangeRenderer={a => a}
            highlightStyle={{
@@ -199,7 +207,7 @@ describe('Highlightable component', function () {
            ranges={range}
            enabled={true}
            onTextHighlighted={onTextHighlighted}
-           name={'test'}
+           id={'test'}
            onMouseOverHighlightedWord={onMouseOverHighlightedWord}
            rangeRenderer={a => a}
            highlightStyle={{
@@ -219,14 +227,14 @@ describe('Highlightable component', function () {
     it('should render with url', () => {
       const onMouseOverHighlightedWord = sinon.spy();
       const onTextHighlighted = sinon.spy();
-      const range = [];
+      const range: Range[] = [];
       const text = 'test http://www.google.fr';
 
       const wrapper = mount(<Highlightable
            ranges={range}
            enabled={true}
            onTextHighlighted={onTextHighlighted}
-           name={'test'}
+           id={'test'}
            onMouseOverHighlightedWord={onMouseOverHighlightedWord}
            rangeRenderer={a => a}
            highlightStyle={{
@@ -249,7 +257,7 @@ describe('Highlightable component', function () {
            ranges={range}
            enabled={true}
            onTextHighlighted={onTextHighlighted}
-           name={'test'}
+           id={'test'}
            onMouseOverHighlightedWord={onMouseOverHighlightedWord}
            rangeRenderer={a => a}
            highlightStyle={{

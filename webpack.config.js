@@ -1,51 +1,54 @@
-var webpack = require('webpack');
-var UglifyJsPlugin = webpack.optimize.UglifyJsPlugin;
-var path = require('path');
-var env = require('yargs').argv.env;
+const nodeExternals = require("webpack-node-externals");
+const UglifyJsPlugin = require("uglifyjs-webpack-plugin");
+const DtsBundleWebpack = require('dts-bundle-webpack');
+const path = require("path");
+const env = require("yargs").argv.env; // use --env with webpack 2
 
-var libraryName = 'Highlightable';
-
-var plugins = [], outputFile;
-
-if (env.mode === 'build') {
-  plugins.push(new UglifyJsPlugin({ minimize: true }));
-  outputFile = libraryName + '.min.js';
+const plugins = [];
+const libraryName = "highlightable-ts"
+let outputFile;
+if (env === "build") {
+    plugins.push(new DtsBundleWebpack({
+        name: libraryName,
+        main: __dirname + "/lib/index.d.ts",
+        out: __dirname + "/lib/index.d.ts",
+        removeSource: true,
+        outputAsModuleFolder: true
+    }));
+    outputFile = libraryName + ".js";
 } else {
-  outputFile = libraryName + '.js';
+    outputFile = libraryName + ".js";
 }
 
-var config = {
-  entry: __dirname + '/src/index.js',
-  devtool: 'source-map',
-  output: {
-    path: __dirname + '/lib',
-    filename: outputFile,
-    library: libraryName,
-    libraryTarget: 'umd',
-    umdNamedDefine: true
-  },
-  module: {
-    rules: [
-      {
-        test: /(\.jsx|\.js)$/,
-        loader: 'babel-loader',
-        exclude: /(node_modules|bower_components)/
-      },
-      {
-        test: /(\.jsx|\.js)$/,
-        loader: "eslint-loader",
-        exclude: /node_modules/
-      }
-    ]
-  },
-  resolve: {
-    modules: [
-      path.resolve('./src'),
-      path.resolve('./node_modules')
-    ],
-    extensions: ['.js']
-  },
-  plugins: plugins
-};
+const buildConfig =  {
+        entry: __dirname + "/src/index.ts",
+        devtool: "source-map",
+        output: {
+            path: __dirname + "/lib",
+            filename: outputFile,
+            library: libraryName,
+            libraryTarget: "umd",
+            umdNamedDefine: true
+        },
+        module: {
+            rules: [
+                {
+                    test: /(\.tsx|\.ts)$/,
+                    loader: "ts-loader"
+                },
+                { test: /sinon\.js$/, loader: "imports-loader?define=>false,require=>false"}
+            ]
+        },
+        resolve: {
+            modules: [path.resolve("./node_modules"), path.resolve("./src")],
+            extensions: [".json", ".js", ".jsx", ".ts", ".tsx"],
+            alias: { sinon: 'sinon/pkg/sinon.js' }
+        },
+        optimization: {
+            minimizer: [new UglifyJsPlugin()],
+        },
+        externals: [nodeExternals()],
+        plugins: plugins
+    };
 
-module.exports = config;
+module.exports = buildConfig;
