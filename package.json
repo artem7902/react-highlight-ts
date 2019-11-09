@@ -2,7 +2,8 @@
   "name": "highlightable-ts",
   "version": "1.0.6",
   "description": "Component that help highlighting text",
-  "main": "lib/Highlightable.min.js",
+  "main": "lib/highlightable-ts.js",
+  "types": "lib/index.d.ts",
   "scripts": {
     "build": "webpack --env build -y",
     "dev": "webpack --progress --colors --watch --mode=dev",
@@ -41,7 +42,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/ydeshayes/react-highlight.git"
+    "url": "https://github.com/artem7902/react-highlight-ts.git"
   },
   "keywords": [
     "highlight",
@@ -51,13 +52,14 @@
     "range",
     "text"
   ],
-  "author": "Yann Deshayes",
+  "author": "Yann Deshayes, Artem Yefimenko",
   "bugs": {
-    "url": "https://github.com/ydeshayes/react-highlight/issues"
+    "url": "https://github.com/artem7902/react-highlight-ts/issues"
   },
-  "homepage": "https://ydeshayes.github.io/react-highlight/",
+  "homepage": "https://github.com/artem7902/react-highlight-ts/",
   "dependencies": {
     "emoji-regex": "^6.5.1"
   },
+  "publishConfig": { "registry": "https://npm.pkg.github.com/" },
   "license": "MIT"
 }
