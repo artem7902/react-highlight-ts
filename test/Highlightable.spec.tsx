@@ -30,7 +30,6 @@ describe('Highlightable component', function () {
            }}
            text={text}
         />);
-        console.log("wrapper")
       expect(onMouseOverHighlightedWord).to.have.property('callCount', 0);
       expect(onTextHighlighted).to.have.property('callCount', 0);
 

@@ -7,7 +7,7 @@ interface EmojiNodeProps {
   id: string;
   highlightStyle?: object;
   charIndex: number;
-  range: Range;
+  range: Range|null;
   text: string;
 }
 

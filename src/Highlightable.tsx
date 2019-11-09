@@ -12,15 +12,15 @@ interface HighlightableProps {
   id: string | number;
   text: string;
   enabled?: boolean;
-  onMouseOverHighlightedWord?: (range?: Range) => void;
-  onTextHighlighted?: (range?: Range) => void;
+  onMouseOverHighlightedWord?: (range :Range|null) => void;
+  onTextHighlighted?: (range: Range|null) => void;
   highlightStyle?: object;
   style?: object;
   rangeRenderer?: (
     letterGroup: JSX.Element[],
     range: Range,
     textCharIndex: number,
-    onMouseOverHighlightedWord: (range?: Range) => void
+    onMouseOverHighlightedWord: (range: Range|null) => void
   ) => void;
 }
 
@@ -42,21 +42,20 @@ export default class Highlightable extends Component<HighlightableProps> {
   }
 
   getRange(charIndex: number) {
-    return (
-      this.props.ranges &&
-      this.props.ranges.find(
-        range => charIndex >= range.start && charIndex <= range.end
-      )
-    );
+    const range = this.props.ranges &&
+    this.props.ranges.find(
+      range => charIndex >= range.start && charIndex <= range.end
+    )
+    return !!range ? range : null;
   }
 
-  onMouseOverHighlightedWord(range?: Range, visible?: boolean) {
+  onMouseOverHighlightedWord(range: Range|null, visible?: boolean) {
     if (!!visible && this.props.onMouseOverHighlightedWord) {
       this.props.onMouseOverHighlightedWord(range);
     }
   }
 
-  getLetterNode(charIndex: number, range: Range) {
+  getLetterNode(charIndex: number, range: Range|null) {
     return (
       <Node
         id={String(this.props.id)}
@@ -70,7 +69,7 @@ export default class Highlightable extends Component<HighlightableProps> {
     );
   }
 
-  getEmojiNode(charIndex: number, range: Range) {
+  getEmojiNode(charIndex: number, range: Range|null) {
     return (
       <EmojiNode
         text={this.props.text}
@@ -83,7 +82,7 @@ export default class Highlightable extends Component<HighlightableProps> {
     );
   }
 
-  getUrlNode(charIndex: number, range: Range, url: string) {
+  getUrlNode(charIndex: number, range: Range|null, url: string) {
     return (
       <UrlNode
         url={url}
@@ -168,7 +167,7 @@ export default class Highlightable extends Component<HighlightableProps> {
     letterGroup: JSX.Element[],
     range: Range,
     textCharIndex: number,
-    onMouseOverHighlightedWord: (range?: Range) => void
+    onMouseOverHighlightedWord: (range: Range|null) => void
   ) {
     return this.props.rangeRenderer
       ? this.props.rangeRenderer(
@@ -182,7 +181,7 @@ export default class Highlightable extends Component<HighlightableProps> {
 
   getNode(
     i: number,
-    range: Range,
+    range: Range|null,
     text: string,
     url: string,
     isEmoji: boolean
@@ -207,7 +206,7 @@ export default class Highlightable extends Component<HighlightableProps> {
       textCharIndex++
     ) {
       const range = this.getRange(textCharIndex);
-      if (!!!range) return null;
+      //if (!!!range) return null;
       const url = getUrl(textCharIndex, this.props.text);
       const isEmoji = emojiRegex().test(
         this.props.text[textCharIndex] + this.props.text[textCharIndex + 1]
@@ -229,7 +228,7 @@ export default class Highlightable extends Component<HighlightableProps> {
         textCharIndex++;
       }
 
-      if (!range) {
+      if (!!!range) {
         newText.push(node);
         continue;
       }
@@ -284,7 +283,7 @@ export default class Highlightable extends Component<HighlightableProps> {
 
   render() {
     const newText = this.getRanges();
-
+    //console.log("newText", newText);
     return (
       <div
         style={this.props.style}

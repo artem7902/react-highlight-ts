@@ -7,7 +7,7 @@ interface UrlNodeProps {
   id: string;
   highlightStyle?: object;
   charIndex: number;
-  range: Range;
+  range: Range|null;
   url: string;
 }
 

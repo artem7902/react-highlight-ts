@@ -7,17 +7,17 @@ interface NodeProps {
   style?: object;
   id: string;
   charIndex: number;
-  range: Range;
+  range: Range|null;
   children: React.ReactNode;
 }
 
 const Node: React.FC<NodeProps> = props => {
-  const getStyle = (range: Range) =>
+  const getStyle = (range?: Range|null) =>
     range ? props.highlightStyle : props.style;
-  const getRangeKey = () =>
-    `${props.id}-${props.range.start}-${props.charIndex}`;
+  const getRangeKey = () => 
+    `${props.id}-${!!props.range ? props.range.start :0}-${props.charIndex}`;
   const getNormalKey = () => `${props.id}-${props.charIndex}`;
-  const getKey = (range: Range) => (!!range ? getRangeKey() : getNormalKey());
+  const getKey = (range?: Range|null) => (!!range ? getRangeKey() : getNormalKey());
 
   return (
     <span
