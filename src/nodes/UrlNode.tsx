@@ -1,25 +1,30 @@
 import React from "react";
 
 import Node from "./Node";
-import Range from "../Range";
+import HightlightRange from "../Range";
 
 interface UrlNodeProps {
   id: string;
   highlightStyle?: object;
   charIndex: number;
-  range: Range|null;
+  range: HightlightRange | null;
   url: string;
+  style?: object;
 }
 
 const UrlNode: React.FC<UrlNodeProps> = props => {
-  const style = { wordWrap: "break-word" };
+  const getStyle = (range?: HightlightRange | null) =>
+    range ? props.highlightStyle : props.style;
   return (
     <Node
       id={props.id}
-      highlightStyle={Object.assign({}, style, props.highlightStyle)}
+      highlightStyle={
+        !!props.range && props.range.style
+          ? props.range.style
+          : getStyle(props.range)
+      }
       charIndex={props.charIndex}
       range={props.range}
-      style={style}
     >
       <a
         data-position={props.charIndex + props.url.length}

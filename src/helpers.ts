@@ -11,16 +11,16 @@ export const debounce = (
   wait: number,
   immediate?: boolean
 ) => {
-  let timeout: undefined | NodeJS.Timer;
+  let timeout: undefined | NodeJS.Timer | number;
 
   return function(this: any, ...args: any) {
     const context: any = this;
     const later = () => {
       timeout = undefined;
-      if (!!immediate) func.apply(context, args);
+      func.apply(context, args);
     };
     const callNow = !!immediate && !!!timeout;
-    if (!!timeout) clearTimeout(timeout);
+    if (!!timeout) clearTimeout(timeout as any);
     timeout = setTimeout(later, wait);
     if (callNow) func.apply(context, args);
   };

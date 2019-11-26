@@ -1,13 +1,13 @@
 import React from "react";
 
 import Node from "./Node";
-import Range from "../Range";
+import HightlightRange from "../Range";
 
 interface EmojiNodeProps {
   id: string;
   highlightStyle?: object;
   charIndex: number;
-  range: Range|null;
+  range: HightlightRange | null;
   text: string;
 }
 

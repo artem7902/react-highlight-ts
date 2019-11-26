@@ -1,12 +1,12 @@
 {
-  "name": "highlightable-ts",
-  "version": "1.0.6",
+  "name": "@artem7902/highlightable-ts",
+  "version": "1.0.0",
   "description": "Component that help highlighting text",
   "main": "lib/highlightable-ts.js",
   "types": "lib/index.d.ts",
   "scripts": {
     "build": "webpack --env build -y",
-    "dev": "webpack --progress --colors --watch --mode=dev",
+    "dev": "webpack --progress --watch --env=dev",
     "test": "mocha -r ts-node/register ./test/**/*.spec.tsx",
     "format": "prettier --write 'src/**/*.ts*'"
   },

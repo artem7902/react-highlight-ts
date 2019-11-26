@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/ydeshayes/react-highlight.svg?branch=master)](https://travis-ci.org/ydeshayes/react-highlight)
+[![Build Status](https://travis-ci.org/artem7902/react-highlight-ts.svg?branch=master)](https://travis-ci.org/artem7902/react-highlight-ts)
 # Highlight component for ReactJS
 
 ReactJS component that help you highlight ranges of text and give you callbacks to detect user text selection.
@@ -6,7 +6,7 @@ ReactJS component that help you highlight ranges of text and give you callbacks 
 ## Installation
 
 ```
-  npm install highlightable
+  npm install react-easy-highlight
 ```
 
 ## Features
@@ -15,6 +15,7 @@ ReactJS component that help you highlight ranges of text and give you callbacks 
 * Callback function that give you the start and end of the user highlited text
 * Customisable renderRange function that allow you to add tooltip on the top of user selection for exemple
 * Convert url string into link
+* Pass React elements as children
 
 ## Getting started
 
@@ -28,14 +29,14 @@ ReactJS component that help you highlight ranges of text and give you callbacks 
                highlightStyle={{
                  backgroundColor: '#ffcc80'
                }}
-               text={'text'}
+               text={<div><p class="text">Text</p></div>}
 />
 ```
 ### Props:
 
 * **ranges** -> array: of Range objects (see Range object below).
 
-* **text** -> string: the all text that the user can highlight.
+* **text** -> React.ReactElement<any> | React.ReactElement<any>[] | string: the all text that the user can highlight.
 
 * **enabled** -> bool: The user can't highlight text if false.
 
@@ -54,13 +55,15 @@ ReactJS component that help you highlight ranges of text and give you callbacks 
 ### Range object:
 
 The range object attributes:
-* **start** -> int: the index of the character where the range start.
-* **end** -> int: the index of the character where the range stop.
+* **start** -> number: the index of the character where the range start.
+* **end** -> number: the index of the character where the range stop.
 * **text** -> string: the highlighted text.
 * **data** -> object: extra data (the props of the highlight component)
+* **style** -> object: additional styles for a range
 
 ## Development
 
 * `npm run build` - produces production version
 * `npm run dev` - produces development version
 * `npm test` - run the tests
+* `npm format` - format code with prettier

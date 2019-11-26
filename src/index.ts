@@ -1,5 +1,5 @@
 import Highlightable from "./Highlightable";
-import Range from "./Range";
+import HightlightRange from "./Range";
 
 export default Highlightable;
-export { Range };
+export { HightlightRange };
