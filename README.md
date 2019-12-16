@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/artem7902/react-highlight-ts.svg?branch=master)](https://travis-ci.org/artem7902/react-highlight-ts)
+"[![codecov](https://codecov.io/gh/artem7902/react-highlight-ts/branch/master/graph/badge.svg)](https://codecov.io/gh/artem7902/react-highlight-ts)"
 # Highlight component for ReactJS
 
 ReactJS component that help you highlight ranges of text and give you callbacks to detect user text selection.
