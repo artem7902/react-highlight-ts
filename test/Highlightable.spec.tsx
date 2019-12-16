@@ -78,14 +78,19 @@ describe('Highlightable component', function () {
         const props: any = w.props();
         if(index < 6) {
           expect(props['data-position']).to.equal(index);
-          expect(props.style.backgroundColor).to.equal('#ffcc80');
-          expect(props.style.enabled).to.equal(true);
           expect(props.children).to.equal(text[index]);
         } else {
           expect(props['data-position']).to.equal(index);
           expect(props.style).to.equal(undefined);
           expect(props.children).to.equal(text[index]);
         }
+      });
+
+      wrapper.find('p').forEach((w) => {
+        const props: any = w.props();
+        expect(props.style.backgroundColor).to.equal('#ffcc80');
+        expect(props.style.enabled).to.equal(true);
+        expect(props.children).to.length(text.length);
       });
     });
   });
@@ -103,7 +108,7 @@ describe('Highlightable component', function () {
            enabled={true}
            onTextHighlighted={onTextHighlighted}
            onMouseOverHighlightedWord={onMouseOverHighlightedWord}
-           rangeRenderer={a => a}
+           //rangeRenderer={a => a}
            highlightStyle={{
              backgroundColor: '#ffcc80',
              enabled: true
@@ -130,20 +135,11 @@ describe('Highlightable component', function () {
       wrapper.setProps({ ranges: newRange });
 
       expect(onMouseOverHighlightedWord).to.have.property('callCount', 1);
-
-      wrapper.find('span').forEach((w, index) => {
-        const props: any = w.props();
-        if(index < 6) {
-          expect(props['data-position']).to.equal(index);
-          expect(props.style.backgroundColor).to.equal('#ffcc80');
-          expect(props.style.enabled).to.equal(true);
-          expect(props.children).to.equal(text[index]);
-        } else {
-          expect(props['data-position']).to.equal(index);
-          expect(props.style).to.equal(undefined);
-          expect(props.children).to.equal(text[index]);
-        }
-      });
+      const props: any = wrapper.find('span').get(0).props;
+      expect(props.style.backgroundColor).to.equal('#ffcc80');
+      expect(props.children).to.length(6);
+      // 13 letters + 1 span wrapper for the selected range
+      expect(wrapper.find('span')).to.length(14);
     });
   });
 

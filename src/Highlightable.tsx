@@ -7,6 +7,10 @@ import UrlNode from "./nodes/UrlNode";
 import { getUrl, debounce } from "./helpers";
 import EmojiNode from "./nodes/EmojiNode";
 
+const defaultRangeStyle = {
+  backgroundColor: "#ffcc80"
+};
+
 interface HighlightPart {
   parentElement: React.ReactElement;
   currentElement: React.ReactElement | string;
@@ -200,7 +204,12 @@ export default class Highlightable extends Component<
         onMouseOverHighlightedWord
       )
     ) : (
-      <span style={!!range.style ? range.style : {}}>letterGroup</span>
+      <span
+        key={`highlight-range-${textCharIndex}`}
+        style={!!range.style ? range.style : defaultRangeStyle}
+      >
+        {letterGroup}
+      </span>
     );
   }
 
@@ -388,42 +397,35 @@ export default class Highlightable extends Component<
   }
 
   getRanges() {
-    if (typeof this.props.text === "string") {
-      return this.processChildrenNodes(
-        { parentElement: <p></p>, currentElement: this.props.text },
-        { startPoint: 0, joinedText: "" }
-      ).element;
-    } else {
-      const highlightParts: HighlightPart[] = [];
-      if (!!this.props.text && typeof this.props.text === "string") {
-        highlightParts.push({
-          parentElement: <div></div>,
-          currentElement: this.props.text
-        });
-      } else if (Array.isArray(this.props.text)) {
-        this.props.text.forEach(item => {
-          highlightParts.push({
-            parentElement: item,
-            currentElement: item.props.children
-          });
-        });
-      } else {
-        highlightParts.push({
-          parentElement: this.props.text,
-          currentElement: this.props.text.props.children
-        });
-      }
-      let startPoint = 0;
-      const toReturn = highlightParts.map(item => {
-        const processResult = this.processChildrenNodes(item, {
-          startPoint,
-          joinedText: ""
-        });
-        startPoint += processResult.textLength;
-        return processResult.element;
+    const highlightParts: HighlightPart[] = [];
+    if (!!this.props.text && typeof this.props.text === "string") {
+      highlightParts.push({
+        parentElement: <div></div>,
+        currentElement: this.props.text
       });
-      return toReturn;
+    } else if (Array.isArray(this.props.text)) {
+      this.props.text.forEach(item => {
+        highlightParts.push({
+          parentElement: item,
+          currentElement: item.props.children
+        });
+      });
+    } else {
+      highlightParts.push({
+        parentElement: this.props.text as any,
+        currentElement: (this.props.text as any).props.children as any
+      });
     }
+    let startPoint = 0;
+    const toReturn = highlightParts.map(item => {
+      const processResult = this.processChildrenNodes(item, {
+        startPoint,
+        joinedText: ""
+      });
+      startPoint += processResult.textLength;
+      return processResult.element;
+    });
+    return toReturn;
   }
 
   returnAllTheText = (item: any, text: string): string => {
