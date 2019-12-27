@@ -24,7 +24,7 @@ const Node: React.FC<NodeProps> = props => {
     <span
       data-position={props.charIndex}
       key={getKey(props.range)}
-      //  style={ getStyle(props.range)}
+      style={ getStyle(props.range)}
     >
       {props.children}
     </span>
