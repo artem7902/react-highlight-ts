@@ -6,6 +6,7 @@ import Enzyme, { mount, shallow } from 'enzyme';
 import Adapter from 'enzyme-adapter-react-16';
 
 import Highlightable, { HightlightRange } from '../src';
+import { SelectionImpl, RangeImpl } from './utils';
 
 Enzyme.configure({ adapter: new Adapter() });
 
@@ -467,6 +468,87 @@ describe('Highlightable component with text as react component', function () {
       expect(onTextHighlighted).to.have.property('callCount', 0);
 
       expect(wrapper.containsMatchingElement(<a>http://www.google.fr</a>)).to.equal(true);
+    });
+  });
+  describe('with mouse events', function () {
+    it('should call mouse event if double click on wrap component', () => {
+      const onMouseOverHighlightedWord = sinon.spy();
+      const onTextHighlighted = sinon.spy();
+      const range: any[] = [];
+      const text = <><p>Test text</p><p>Test Text 2</p></>;
+
+      const wrapper = mount(
+      <Highlightable
+        ranges={range}
+        enabled={true}
+        onTextHighlighted={onTextHighlighted}
+        id={'test'}
+        onMouseOverHighlightedWord={onMouseOverHighlightedWord}
+        rangeRenderer={(a, b) => b}
+        highlightStyle={{
+          backgroundColor: '#ffcc80',
+          enabled: true
+        }}
+        text={text}/>
+      );
+      const wDiv = wrapper.find('div').get(0);
+      const firstPNode = wrapper.find('p').first().getDOMNode();
+      expect(!!wDiv).to.equal(true);
+      // Add selection Object manually
+      const selection = new SelectionImpl();
+      const selectionRange = new RangeImpl();
+      selectionRange.setStart(firstPNode, 0)
+      selectionRange.setEnd(firstPNode, 5)
+      selection.addRange(selectionRange)
+      const anyGlobal: any = global;
+      anyGlobal.window.getSelection = () => selection;
+      wrapper.simulate("doubleclick");
+      expect(onTextHighlighted).to.have.property('callCount', 1);
+      expect(wrapper.containsMatchingElement(<span>T</span>)).to.equal(true);
+      expect(wrapper.containsMatchingElement(<span>e</span>)).to.equal(true);
+      expect(wrapper.containsMatchingElement(<span>s</span>)).to.equal(true);
+      expect(wrapper.containsMatchingElement(<span>t</span>)).to.equal(true);
+    });
+    it('should call mouse event if mouse up on wrap component after 200ms delay', async () => {
+      const onMouseOverHighlightedWord = sinon.spy();
+      const onTextHighlighted = sinon.spy();
+      const range: any[] = [];
+      const text = <><p>Test text</p><p>Test Text 2</p></>;
+
+      const wrapper = mount(
+      <Highlightable
+        ranges={range}
+        enabled={true}
+        onTextHighlighted={onTextHighlighted}
+        id={'test'}
+        onMouseOverHighlightedWord={onMouseOverHighlightedWord}
+        rangeRenderer={(a, b) => b}
+        highlightStyle={{
+          backgroundColor: '#ffcc80',
+          enabled: true
+        }}
+        text={text}/>
+      );
+      const wDiv = wrapper.find('div').get(0);
+      const firstPNode = wrapper.find('p').first().getDOMNode();
+      expect(!!wDiv).to.equal(true);
+      // Add selection Object manually
+      const selection = new SelectionImpl();
+      const selectionRange = new RangeImpl();
+      selectionRange.setStart(firstPNode, 0)
+      selectionRange.setEnd(firstPNode, 5)
+      selection.addRange(selectionRange)
+      const anyGlobal: any = global;
+      anyGlobal.window.getSelection = () => selection;
+      wrapper.simulate("mouseup");
+      await new Promise((res,rej) => {
+        setTimeout(() => res(), 200)
+      });
+      expect(onTextHighlighted).to.have.property('callCount', 1);
+      expect(wrapper.containsMatchingElement(<span>T</span>)).to.equal(true);
+      expect(wrapper.containsMatchingElement(<span>e</span>)).to.equal(true);
+      expect(wrapper.containsMatchingElement(<span>s</span>)).to.equal(true);
+      expect(wrapper.containsMatchingElement(<span>t</span>)).to.equal(true);
     });
   });
 });
