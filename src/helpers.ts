@@ -5,23 +5,3 @@ export const getUrl = (i: number, text: string) => {
 
   return match && match.length ? match[1] : "";
 };
-
-export const debounce = (
-  func: (args: any[]) => any,
-  wait: number,
-  immediate?: boolean
-) => {
-  let timeout: undefined | NodeJS.Timer | number;
-
-  return function(this: any, ...args: any) {
-    const context: any = this;
-    const later = () => {
-      timeout = undefined;
-      func.apply(context, args);
-    };
-    const callNow = !!immediate && !!!timeout;
-    if (!!timeout) clearTimeout(timeout as any);
-    timeout = setTimeout(later, wait);
-    if (callNow) func.apply(context, args);
-  };
-};

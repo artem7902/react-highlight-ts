@@ -1,10 +1,11 @@
 import React, { Component } from "react";
 import emojiRegex from "emoji-regex";
+import debounce from "debounce";
 
 import Node from "./nodes/Node";
 import HightlightRange from "./Range";
 import UrlNode from "./nodes/UrlNode";
-import { getUrl, debounce } from "./helpers";
+import { getUrl } from "./helpers";
 import EmojiNode from "./nodes/EmojiNode";
 
 const defaultRangeStyle = {
