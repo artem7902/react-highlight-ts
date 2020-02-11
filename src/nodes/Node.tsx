@@ -13,7 +13,11 @@ interface NodeProps {
 
 const Node: React.FC<NodeProps> = props => {
   const getStyle = (range?: HightlightRange | null) =>
-    range ? props.highlightStyle : props.style;
+    !!range
+      ? !!range.style
+        ? range.style
+        : props.highlightStyle
+      : props.style;
   const getRangeKey = () =>
     `${props.id}-${!!props.range ? props.range.start : 0}-${props.charIndex}`;
   const getNormalKey = () => `${props.id}-${props.charIndex}`;
@@ -24,7 +28,7 @@ const Node: React.FC<NodeProps> = props => {
     <span
       data-position={props.charIndex}
       key={getKey(props.range)}
-      style={ getStyle(props.range)}
+      style={getStyle(props.range)}
     >
       {props.children}
     </span>

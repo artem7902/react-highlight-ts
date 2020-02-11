@@ -542,13 +542,259 @@ describe('Highlightable component with text as react component', function () {
       anyGlobal.window.getSelection = () => selection;
       wrapper.simulate("mouseup");
       await new Promise((res,rej) => {
-        setTimeout(() => res(), 200)
+        setTimeout(() => res(), 300)
       });
       expect(onTextHighlighted).to.have.property('callCount', 1);
       expect(wrapper.containsMatchingElement(<span>T</span>)).to.equal(true);
       expect(wrapper.containsMatchingElement(<span>e</span>)).to.equal(true);
       expect(wrapper.containsMatchingElement(<span>s</span>)).to.equal(true);
       expect(wrapper.containsMatchingElement(<span>t</span>)).to.equal(true);
+    });
+    it('should not call mouse event if mouse up on wrap component after and enabled property is false 200ms delay', async () => {
+      const onMouseOverHighlightedWord = sinon.spy();
+      const onTextHighlighted = sinon.spy();
+      const range: any[] = [];
+      const text = <><p>Test text</p><p>Test Text 2</p></>;
+
+      const wrapper = mount(
+      <Highlightable
+        ranges={range}
+        enabled={false}
+        onTextHighlighted={onTextHighlighted}
+        id={'test'}
+        onMouseOverHighlightedWord={onMouseOverHighlightedWord}
+        rangeRenderer={(a, b) => b}
+        highlightStyle={{
+          backgroundColor: '#ffcc80',
+          enabled: true
+        }}
+        text={text}
+        />
+      );
+      const wDiv = wrapper.find('div').get(0);
+      const firstPNode = wrapper.find('p').first().getDOMNode();
+      expect(!!wDiv).to.equal(true);
+      // Add selection Object manually
+      const selection = new SelectionImpl();
+      const selectionRange = new RangeImpl();
+      selectionRange.setStart(firstPNode, 0)
+      selectionRange.setEnd(firstPNode, 5)
+      selection.addRange(selectionRange)
+      const anyGlobal: any = global;
+      anyGlobal.window.getSelection = () => selection;
+      wrapper.simulate("mouseup");
+      await new Promise((res,rej) => {
+        setTimeout(() => res(), 300)
+      });
+      expect(onTextHighlighted).to.have.property('callCount', 0);
+      expect(wrapper.containsMatchingElement(<span>T</span>)).to.equal(true);
+      expect(wrapper.containsMatchingElement(<span>e</span>)).to.equal(true);
+      expect(wrapper.containsMatchingElement(<span>s</span>)).to.equal(true);
+      expect(wrapper.containsMatchingElement(<span>t</span>)).to.equal(true);
+    });
+    it('should not call mouse event if mouse up on wrap component  and selection is undefined after 200ms dela', async () => {
+      const onMouseOverHighlightedWord = sinon.spy();
+      const onTextHighlighted = sinon.spy();
+      const range: any[] = [];
+      const text = <><p>Test text</p><p>Test Text 2</p></>;
+
+      const wrapper = mount(
+      <Highlightable
+        ranges={range}
+        enabled={true}
+        onTextHighlighted={onTextHighlighted}
+        id={'test'}
+        onMouseOverHighlightedWord={onMouseOverHighlightedWord}
+        rangeRenderer={(a, b) => b}
+        highlightStyle={{
+          backgroundColor: '#ffcc80',
+          enabled: true
+        }}
+        text={text}
+        />
+      );
+      const wDiv = wrapper.find('div').get(0);
+      const firstPNode = wrapper.find('p').first().getDOMNode();
+      expect(!!wDiv).to.equal(true);
+      // Add selection Object manually
+      const selection = undefined;
+      const selectionRange = new RangeImpl();
+      selectionRange.setStart(firstPNode, 0)
+      selectionRange.setEnd(firstPNode, 5)
+      const anyGlobal: any = global;
+      anyGlobal.window.getSelection = () => selection;
+      wrapper.simulate("mouseup");
+      await new Promise((res,rej) => {
+        setTimeout(() => res(), 300)
+      });
+      expect(onTextHighlighted).to.have.property('callCount', 0);
+      expect(wrapper.containsMatchingElement(<span>T</span>)).to.equal(true);
+      expect(wrapper.containsMatchingElement(<span>e</span>)).to.equal(true);
+      expect(wrapper.containsMatchingElement(<span>s</span>)).to.equal(true);
+      expect(wrapper.containsMatchingElement(<span>t</span>)).to.equal(true);
+    });
+    it('should not call mouse event if mouse up on wrap component and selection.toString() is null after 200ms delay', async () => {
+      const onMouseOverHighlightedWord = sinon.spy();
+      const onTextHighlighted = sinon.spy();
+      const range: any[] = [];
+      const text = <><p>Test text</p><p>Test Text 2</p></>;
+
+      const wrapper = mount(
+      <Highlightable
+        ranges={range}
+        enabled={true}
+        onTextHighlighted={onTextHighlighted}
+        id={'test'}
+        onMouseOverHighlightedWord={onMouseOverHighlightedWord}
+        rangeRenderer={(a, b) => b}
+        highlightStyle={{
+          backgroundColor: '#ffcc80',
+          enabled: true
+        }}
+        text={text}
+        />
+      );
+      const wDiv = wrapper.find('div').get(0);
+      const firstPNode = wrapper.find('p').first().getDOMNode();
+      expect(!!wDiv).to.equal(true);
+      // Add selection Object manually
+      const selection = new SelectionImpl();
+      const anyGlobal: any = global;
+      anyGlobal.window.getSelection = () => selection;
+      wrapper.simulate("mouseup");
+      await new Promise((res,rej) => {
+        setTimeout(() => res(), 300)
+      });
+      expect(onTextHighlighted).to.have.property('callCount', 0);
+      expect(wrapper.containsMatchingElement(<span>T</span>)).to.equal(true);
+      expect(wrapper.containsMatchingElement(<span>e</span>)).to.equal(true);
+      expect(wrapper.containsMatchingElement(<span>s</span>)).to.equal(true);
+      expect(wrapper.containsMatchingElement(<span>t</span>)).to.equal(true);
+    });
+    it('should not call mouse event if mouse up on wrap component and rangeCount is 0 after 200ms delay', async () => {
+      const onMouseOverHighlightedWord = sinon.spy();
+      const onTextHighlighted = sinon.spy();
+      const range: any[] = [];
+      const text = <><p>Test text</p><p>Test Text 2</p></>;
+
+      const wrapper = mount(
+      <Highlightable
+        ranges={range}
+        enabled={true}
+        onTextHighlighted={onTextHighlighted}
+        id={'test'}
+        onMouseOverHighlightedWord={onMouseOverHighlightedWord}
+        rangeRenderer={(a, b) => b}
+        highlightStyle={{
+          backgroundColor: '#ffcc80',
+          enabled: true
+        }}
+        text={text}/>
+      );
+      const wDiv = wrapper.find('div').get(0);
+      const firstPNode = wrapper.find('p').first().getDOMNode();
+      expect(!!wDiv).to.equal(true);
+      // Add selection Object manually
+      const selection = new SelectionImpl();
+      selection.rangeCount = 0;
+      const selectionRange = new RangeImpl();
+      selectionRange.setStart(firstPNode, 0)
+      selectionRange.setEnd(firstPNode, 5)
+      selection.addRange(selectionRange)
+      const anyGlobal: any = global;
+      anyGlobal.window.getSelection = () => selection;
+      wrapper.simulate("mouseup");
+      await new Promise((res,rej) => {
+        setTimeout(() => res(), 300)
+      });
+      expect(onTextHighlighted).to.have.property('callCount', 0);
+      expect(wrapper.containsMatchingElement(<span>T</span>)).to.equal(true);
+      expect(wrapper.containsMatchingElement(<span>e</span>)).to.equal(true);
+      expect(wrapper.containsMatchingElement(<span>s</span>)).to.equal(true);
+      expect(wrapper.containsMatchingElement(<span>t</span>)).to.equal(true);
+    });
+    it('should process on mouse move event appropriately (call only when mouse down and change range object if selection is valid)', async () => {
+      const onMouseOverHighlightedWord = sinon.spy();
+      const onTextHighlighted = sinon.spy();
+      const range: any[] = [];
+      const text = <><p>Test text</p><p>Test Text 2</p></>;
+
+      const wrapper = mount(
+      <Highlightable
+        ranges={range}
+        enabled={true}
+        onTextHighlighted={onTextHighlighted}
+        id={'test'}
+        onMouseOverHighlightedWord={onMouseOverHighlightedWord}
+        rangeRenderer={(a, b) => b}
+        highlightStyle={{
+          backgroundColor: '#ffcc80',
+          enabled: true
+        }}
+        text={text}/>
+      );
+      const wDiv = wrapper.find('div').get(0);
+      const firstPNode = wrapper.find('p').first().getDOMNode();
+      expect(!!wDiv).to.equal(true);
+      // Add selection Object manually
+      const selection = new SelectionImpl();
+      selection.rangeCount = 0;
+      const selectionRange = new RangeImpl();
+      selectionRange.setStart(firstPNode, 0)
+      selectionRange.setEnd(firstPNode, 5)
+      selection.addRange(selectionRange)
+      const anyGlobal: any = global;
+      anyGlobal.window.getSelection = () => selection;
+      expect(!!(wrapper.instance() as any).range).to.equal(false);
+      expect(!!(wrapper.instance() as any).mouseDown).to.equal(false);
+      wrapper.simulate("mousedown");
+      wrapper.simulate("mousemove");
+      expect(!!(wrapper.instance() as any).range).to.equal(false);
+      expect(!!(wrapper.instance() as any).mouseDown).to.equal(true);
+      wrapper.simulate("mouseup");
+      anyGlobal.window.getSelection = () => undefined;
+      wrapper.simulate("mousedown");
+      wrapper.simulate("mousemove");
+      expect(!!(wrapper.instance() as any).range).to.equal(false);
+      expect(!!(wrapper.instance() as any).mouseDown).to.equal(true);
+      wrapper.simulate("mouseup");
+      selection.rangeCount = 1;
+      anyGlobal.window.getSelection = () => selection;
+      wrapper.simulate("mousemove");
+      expect(!!(wrapper.instance() as any).range).to.equal(false);
+      expect(!!(wrapper.instance() as any).mouseDown).to.equal(false);
+      wrapper.simulate("mousedown");
+      wrapper.simulate("mousemove");
+      expect(!!(wrapper.instance() as any).range).to.equal(true);
+      expect(!!(wrapper.instance() as any).mouseDown).to.equal(true);
+    });
+    it('should process on mouse move down appropriately (set mouse down flag)', async () => {
+      const onMouseOverHighlightedWord = sinon.spy();
+      const onTextHighlighted = sinon.spy();
+      const range: any[] = [];
+      const text = <><p>Test text</p><p>Test Text 2</p></>;
+
+      const wrapper = mount(
+      <Highlightable
+        ranges={range}
+        enabled={true}
+        onTextHighlighted={onTextHighlighted}
+        id={'test'}
+        onMouseOverHighlightedWord={onMouseOverHighlightedWord}
+        rangeRenderer={(a, b) => b}
+        highlightStyle={{
+          backgroundColor: '#ffcc80',
+          enabled: true
+        }}
+        text={text}/>
+      );
+      expect(!!(wrapper.instance() as any).mouseDown).to.equal(false);
+      wrapper.simulate("mousedown");
+      expect(!!(wrapper.instance() as any).mouseDown).to.equal(true);
+      wrapper.simulate("mouseup");
+      expect(!!(wrapper.instance() as any).mouseDown).to.equal(false);
+      wrapper.simulate("mousedown");
+      expect(!!(wrapper.instance() as any).mouseDown).to.equal(true);
     });
   });
 });

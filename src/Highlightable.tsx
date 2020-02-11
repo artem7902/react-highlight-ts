@@ -42,6 +42,8 @@ export default class Highlightable extends Component<
   HighlightableProps,
   HighlightableState
 > {
+  public mouseDown: boolean;
+  public range?: Range;
   public dismissMouseUp: number;
   public doucleckicked: boolean;
   state = {
@@ -51,6 +53,7 @@ export default class Highlightable extends Component<
     super(props);
     this.dismissMouseUp = 0;
     this.doucleckicked = false;
+    this.mouseDown = false;
   }
 
   shouldComponentUpdate(newProps: HighlightableProps) {
@@ -137,18 +140,40 @@ export default class Highlightable extends Component<
     }
 
     try {
-      const range = selection.getRangeAt(0);
-      if (!!!range) return;
-      const startContainerParent = range.startContainer.parentNode as any;
-      const endContainerParent = range.endContainer.parentNode as any;
+      if (selection.rangeCount > 0) {
+        this.range = selection.getRangeAt(0);
+      }
+      if (!!!this.range) return;
+      const startContainerParent = this.range.startContainer.parentNode as any;
+      const endContainerParent = this.range.endContainer.parentNode as any;
 
-      const startContainerPosition = parseInt(
-        !!startContainerParent ? startContainerParent.dataset.position : 0
-      );
-      const endContainerPosition = parseInt(
-        !!endContainerParent ? endContainerParent.dataset.position : -1
-      );
-
+      let startContainerPosition = 0;
+      let endContainerPosition = -1;
+      if (
+        !!!endContainerParent ||
+        !!!endContainerParent.dataset ||
+        !!!endContainerParent.dataset.position
+      ) {
+        if (
+          !!this.range.endContainer.firstChild &&
+          !!(this.range.endContainer.firstChild as any).dataset
+        ) {
+          startContainerPosition = parseInt(
+            !!startContainerParent ? startContainerParent.dataset.position : 0
+          );
+          endContainerPosition =
+            parseInt(
+              (this.range.endContainer.firstChild as any).dataset.position
+            ) - 1;
+        }
+      } else {
+        startContainerPosition = parseInt(
+          !!startContainerParent ? startContainerParent.dataset.position : 0
+        );
+        endContainerPosition = parseInt(
+          !!endContainerParent ? endContainerParent.dataset.position : -1
+        );
+      }
       const startHL =
         startContainerPosition < endContainerPosition
           ? startContainerPosition
@@ -157,7 +182,6 @@ export default class Highlightable extends Component<
         startContainerPosition < endContainerPosition
           ? endContainerPosition
           : startContainerPosition;
-
       const rangeObj = new HightlightRange(
         startHL,
         endHL,
@@ -172,6 +196,7 @@ export default class Highlightable extends Component<
   }
 
   onMouseUp() {
+    this.mouseDown = false;
     debounce(() => {
       if (this.doucleckicked) {
         this.doucleckicked = false;
@@ -429,28 +454,22 @@ export default class Highlightable extends Component<
     return toReturn;
   }
 
-  returnAllTheText = (item: any, text: string): string => {
-    if (Array.isArray(item)) {
-      return item.reduce(
-        (acc, item) =>
-          (acc +=
-            typeof item === "string"
-              ? item
-              : this.returnAllTheText(item.props.children, text)),
-        ""
-      );
-    } else if (typeof item === "string") {
-      return text + item;
-    } else {
-      return this.returnAllTheText(item.props.children, text);
-    }
-  };
-
   render() {
     const newText = this.getRanges();
     return (
       <div
         style={this.props.style}
+        onMouseMove={() => {
+          if (!!!this.mouseDown) return;
+          const selection = window.getSelection();
+          if (!!!selection) return;
+          if (selection.rangeCount > 0) {
+            this.range = selection.getRangeAt(0);
+          }
+        }}
+        onMouseDown={() => {
+          this.mouseDown = true;
+        }}
         onMouseUp={this.onMouseUp.bind(this)}
         onDoubleClick={this.onDoubleClick.bind(this)}
       >

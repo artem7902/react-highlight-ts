@@ -14,7 +14,11 @@ interface UrlNodeProps {
 
 const UrlNode: React.FC<UrlNodeProps> = props => {
   const getStyle = (range?: HightlightRange | null) =>
-    range ? props.highlightStyle : props.style;
+    !!range
+      ? !!range.style
+        ? range.style
+        : props.highlightStyle
+      : props.style;
   return (
     <Node
       id={props.id}

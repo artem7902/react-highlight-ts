@@ -13,7 +13,7 @@ export class SelectionImpl implements Selection{
         this.focusNode = null;
         this.focusOffset = 0;
         this.isCollapsed = false;
-        this.rangeCount = 0;
+        this.rangeCount = 1;
         this.type = "test";
         this.ranges = [];
     }
