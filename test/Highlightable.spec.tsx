@@ -7,6 +7,8 @@ import Adapter from 'enzyme-adapter-react-16';
 
 import Highlightable, { HightlightRange } from '../src';
 import { SelectionImpl, RangeImpl } from './utils';
+import { HighlightableComponentModel } from "../src/models/Highlightable";
+import HighlightPart from '../src/models/HighlightPart';
 
 Enzyme.configure({ adapter: new Adapter() });
 
@@ -795,6 +797,207 @@ describe('Highlightable component with text as react component', function () {
       expect(!!(wrapper.instance() as any).mouseDown).to.equal(false);
       wrapper.simulate("mousedown");
       expect(!!(wrapper.instance() as any).mouseDown).to.equal(true);
+    });
+  });
+});
+
+
+describe('Test Highlightable component methods', function () {
+  describe('processChildrenNodes method', function () {
+    const onMouseOverHighlightedWord = sinon.spy();
+    const onTextHighlighted = sinon.spy();
+    const range: any[] = [];
+    const text = <><p>Test text</p><p>Test Text 2</p></>;
+
+    const wrapper = mount(<Highlightable
+         ranges={range}
+         enabled={true}
+         onTextHighlighted={onTextHighlighted}
+         id={'test'}
+         onMouseOverHighlightedWord={onMouseOverHighlightedWord}
+         rangeRenderer={(a, b) => b}
+         highlightStyle={{
+           backgroundColor: '#ffcc80',
+           enabled: true
+         }}
+         text={text}
+      />);
+      const componentInstance = wrapper.instance() as any as HighlightableComponentModel;
+    it('parent is a React.Component and current element is a text', () => {
+        const highlightPart: HighlightPart = {
+          parentElement: <div></div>,
+          currentElement: "Test"
+        };
+        const processResult = componentInstance.processChildrenNodes(highlightPart, {
+          startPoint:0,
+          joinedText: ""
+        });
+        expect(processResult.textLength).to.equal(4);
+        expect(Array.isArray(processResult.element)).to.equal(false);
+        expect((processResult.element as React.ReactElement).props.children.length).to.equal(4);
+        expect((processResult.element as React.ReactElement).props.children.map((child: any) => child.props.children).join("")).to.equal("Test");
+    });
+    it('parent and current element are React.Component', () => {
+      const highlightPart: HighlightPart = {
+        parentElement: <div></div>,
+        currentElement: <span>Test</span>
+      };
+      const processResult = componentInstance.processChildrenNodes(highlightPart, {
+        startPoint:0,
+        joinedText: ""
+      });
+      expect(processResult.textLength).to.equal(4);
+      expect(Array.isArray(processResult.element)).to.equal(false);
+      expect((processResult.element as React.ReactElement).props.children.length).to.equal(1);
+      expect((processResult.element as React.ReactElement).props.children[0].type).to.equal("span");
+      const spanChild = (processResult.element as React.ReactElement).props.children[0];
+      expect((spanChild as React.ReactElement).props.children.length).to.equal(4);
+      expect((spanChild as React.ReactElement).props.children.map((child: any) => child.props.children).join("")).to.equal("Test");
+  });
+  it('parent is a React.Component and current element is a React.Component array ', () => {
+    const highlightPart: HighlightPart = {
+      parentElement: <div></div>,
+      currentElement: [<span>Test</span>, <span>Test2</span>]
+    };
+    const processResult = componentInstance.processChildrenNodes(highlightPart, {
+      startPoint:0,
+      joinedText: ""
+    });
+    expect(processResult.textLength).to.equal(9);
+    expect(Array.isArray(processResult.element)).to.equal(false);
+    expect((processResult.element as React.ReactElement).props.children.length).to.equal(2);
+    expect((processResult.element as React.ReactElement).props.children[0].type).to.equal("span");
+    expect((processResult.element as React.ReactElement).props.children[1].type).to.equal("span");
+    const spanChild1 = (processResult.element as React.ReactElement).props.children[0];
+    const spanChild2 = (processResult.element as React.ReactElement).props.children[1];
+    expect((spanChild1 as React.ReactElement).props.children.length).to.equal(4);
+    expect((spanChild1 as React.ReactElement).props.children.map((child: any) => child.props.children).join("")).to.equal("Test");
+    expect((spanChild2 as React.ReactElement).props.children.length).to.equal(5);
+    expect((spanChild2 as React.ReactElement).props.children.map((child: any) => child.props.children).join("")).to.equal("Test2");
+  });
+  it('parent is a React.Component and current element is a complex React.Component with another React.Components as children ', () => {
+    const highlightPart: HighlightPart = {
+      parentElement: <div></div>,
+      currentElement: <div><p><span>Test</span></p> <p><span>Test2</span></p></div>
+    };
+    const processResult = componentInstance.processChildrenNodes(highlightPart, {
+      startPoint:0,
+      joinedText: ""
+    });
+    expect(processResult.textLength).to.equal(10);
+    expect(Array.isArray(processResult.element)).to.equal(false);
+    expect((processResult.element as React.ReactElement).props.children.length).to.equal(1);
+    expect((processResult.element as React.ReactElement).props.children[0].type).to.equal("div");
+    const divChildWrapper = (processResult.element as React.ReactElement).props.children[0];
+    expect((divChildWrapper as React.ReactElement).props.children.length).to.equal(3);
+    expect((divChildWrapper as React.ReactElement).props.children[0].type).to.equal("p");
+    expect(Array.isArray((divChildWrapper as React.ReactElement).props.children[1])).to.equal(true);
+    expect((divChildWrapper as React.ReactElement).props.children[1][0].props.children).to.equal(" ");
+    expect((divChildWrapper as React.ReactElement).props.children[2].type).to.equal("p");
+    const pChild1 = (divChildWrapper as React.ReactElement).props.children[0];
+    const pChild2 = (divChildWrapper as React.ReactElement).props.children[2];
+    expect((pChild1 as React.ReactElement).props.children.length).to.equal(1);
+    expect((pChild1 as React.ReactElement).props.children[0].type).to.equal("span");
+    expect((pChild2 as React.ReactElement).props.children.length).to.equal(1);
+    expect((pChild2 as React.ReactElement).props.children[0].type).to.equal("span");
+    const spanChild1 = (pChild1 as React.ReactElement).props.children[0];
+    const spanChild2 = (pChild2 as React.ReactElement).props.children[0];
+    expect((spanChild1 as React.ReactElement).props.children.length).to.equal(4);
+    expect((spanChild1 as React.ReactElement).props.children.map((child: any) => child.props.children).join("")).to.equal("Test");
+    expect((spanChild2 as React.ReactElement).props.children.length).to.equal(5);
+    expect((spanChild2 as React.ReactElement).props.children.map((child: any) => child.props.children).join("")).to.equal("Test2");
+  });
+  it('parent and current element are undefined', () => {
+    const highlightPart = {
+    } as any;
+    expect(componentInstance.processChildrenNodes.bind(componentInstance, highlightPart, {
+      startPoint:0,
+      joinedText: ""
+    })).to.throw("At least parent element should be passed to the processChildrenNodes function!");
+
+  });
+  it('parent is a React.Component and current element is undefined', () => {
+    const highlightPart = {
+      parentElement: <div></div>
+    } as any;
+    const processResult = componentInstance.processChildrenNodes(highlightPart, {
+      startPoint: 0,
+      joinedText: ""
+    });
+    expect(processResult.textLength).to.equal(0);
+    expect((processResult.element as React.ReactElement).type).to.equal("div");
+    expect(!!(processResult.element as React.ReactElement).props.children).to.equal(false);
+  });
+  });
+  describe('getRanges method', function () {
+    it('text prop is a text', () => {
+      const onMouseOverHighlightedWord = sinon.spy();
+      const onTextHighlighted = sinon.spy();
+      const range: any[] = [];
+      const text = "Test";
+  
+      const wrapper = mount(<Highlightable
+          ranges={range}
+          enabled={true}
+          onTextHighlighted={onTextHighlighted}
+          id={'test'}
+          onMouseOverHighlightedWord={onMouseOverHighlightedWord}
+          rangeRenderer={(a, b) => b}
+          highlightStyle={{
+            backgroundColor: '#ffcc80',
+            enabled: true
+          }}
+          text={text}
+        />);
+        const componentInstance = wrapper.instance() as any as HighlightableComponentModel;
+        const ranges = componentInstance.getRanges();
+        expect(ranges.length).to.equal(1);
+    });
+    it('text prop is a React.Component', () => {
+      const onMouseOverHighlightedWord = sinon.spy();
+      const onTextHighlighted = sinon.spy();
+      const range: any[] = [];
+      const text = <><p>Test text</p><p>Test Text 2</p></>;
+  
+      const wrapper = mount(<Highlightable
+          ranges={range}
+          enabled={true}
+          onTextHighlighted={onTextHighlighted}
+          id={'test'}
+          onMouseOverHighlightedWord={onMouseOverHighlightedWord}
+          rangeRenderer={(a, b) => b}
+          highlightStyle={{
+            backgroundColor: '#ffcc80',
+            enabled: true
+          }}
+          text={text}
+        />);
+        const componentInstance = wrapper.instance() as any as HighlightableComponentModel;
+        const ranges = componentInstance.getRanges();
+        expect(ranges.length).to.equal(1);
+    });
+    it('text prop is a React.Component array', () => {
+      const onMouseOverHighlightedWord = sinon.spy();
+      const onTextHighlighted = sinon.spy();
+      const range: any[] = [];
+      const text = [<p>Test text</p>, <p>Test Text 2</p>];
+  
+      const wrapper = mount(<Highlightable
+          ranges={range}
+          enabled={true}
+          onTextHighlighted={onTextHighlighted}
+          id={'test'}
+          onMouseOverHighlightedWord={onMouseOverHighlightedWord}
+          rangeRenderer={(a, b) => b}
+          highlightStyle={{
+            backgroundColor: '#ffcc80',
+            enabled: true
+          }}
+          text={text}
+        />);
+        const componentInstance = wrapper.instance() as any as HighlightableComponentModel;
+        const ranges = componentInstance.getRanges();
+        expect(ranges.length).to.equal(2);
     });
   });
 });

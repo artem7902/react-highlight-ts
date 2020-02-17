@@ -8,14 +8,13 @@ import UrlNode from "./nodes/UrlNode";
 import { getUrl } from "./helpers";
 import EmojiNode from "./nodes/EmojiNode";
 
+import HighlightPart from "./models/HighlightPart";
+import ProcessChildrenNodesResult from "./models/ProcessChildrenNodesResult";
+import { HighlightableComponentModel } from "./models/Highlightable";
+
 const defaultRangeStyle = {
   backgroundColor: "#ffcc80"
 };
-
-interface HighlightPart {
-  parentElement: React.ReactElement;
-  currentElement: React.ReactElement | string;
-}
 
 interface HighlightableProps {
   ranges: HightlightRange[];
@@ -38,10 +37,9 @@ interface HighlightableState {
   highlightParts: HighlightPart[];
 }
 
-export default class Highlightable extends Component<
-  HighlightableProps,
-  HighlightableState
-> {
+export default class Highlightable
+  extends Component<HighlightableProps, HighlightableState>
+  implements HighlightableComponentModel {
   public mouseDown: boolean;
   public range?: Range;
   public dismissMouseUp: number;
@@ -209,7 +207,7 @@ export default class Highlightable extends Component<
     }, 200).bind(this)();
   }
 
-  onDoubleClick(event: any) {
+  onDoubleClick(event: React.MouseEvent<HTMLDivElement, MouseEvent>) {
     event.stopPropagation();
 
     this.doucleckicked = true;
@@ -258,7 +256,7 @@ export default class Highlightable extends Component<
   processChildrenNodes(
     highlightPart: HighlightPart,
     textInfo: { startPoint: number; joinedText: string }
-  ): any {
+  ): ProcessChildrenNodesResult {
     if (!!!highlightPart.currentElement) {
       if (!!highlightPart.parentElement)
         return {
@@ -266,7 +264,9 @@ export default class Highlightable extends Component<
           element: React.cloneElement(highlightPart.parentElement)
         };
       else {
-        throw Error("unexpected error!");
+        throw Error(
+          "At least parent element should be passed to the processChildrenNodes function!"
+        );
       }
     }
     if (typeof highlightPart.currentElement === "string") {
@@ -359,7 +359,7 @@ export default class Highlightable extends Component<
       }
       if (!!highlightPart.parentElement)
         return {
-          textLength: textInfo.joinedText.length + stringToInsert.length,
+          textLength: textInfo.joinedText.length,
           element: React.cloneElement(highlightPart.parentElement, {
             ...highlightPart.parentElement.props,
             children: newText
@@ -367,8 +367,8 @@ export default class Highlightable extends Component<
         };
       else
         return {
-          textLength: textInfo.joinedText.length + stringToInsert.length,
-          element: newText
+          textLength: textInfo.joinedText.length,
+          element: newText as React.ReactElement[]
         };
     } else if (!!Array.isArray(highlightPart.currentElement)) {
       const processedNodes: any = [];
@@ -393,16 +393,6 @@ export default class Highlightable extends Component<
       };
     } else {
       const processedNodes = [];
-      if (!!Array.isArray(highlightPart.currentElement.props.children)) {
-        highlightPart.currentElement.props.children.forEach((child: any) => {
-          processedNodes.push(
-            this.processChildrenNodes(
-              { parentElement: child, currentElement: child.props.children },
-              { ...textInfo }
-            )
-          );
-        });
-      }
       processedNodes.push(
         this.processChildrenNodes(
           {
@@ -422,7 +412,7 @@ export default class Highlightable extends Component<
     }
   }
 
-  getRanges() {
+  getRanges(): (React.ReactElement | React.ReactElement[])[] {
     const highlightParts: HighlightPart[] = [];
     if (!!this.props.text && typeof this.props.text === "string") {
       highlightParts.push({
