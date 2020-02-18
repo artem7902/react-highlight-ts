@@ -4,7 +4,6 @@ import HightlightRange from "../Range";
 
 interface NodeProps {
   highlightStyle?: object;
-  style?: object;
   id: string;
   charIndex: number;
   range: HightlightRange | null;
@@ -13,11 +12,7 @@ interface NodeProps {
 
 const Node: React.FC<NodeProps> = props => {
   const getStyle = (range?: HightlightRange | null) =>
-    !!range
-      ? !!range.style
-        ? range.style
-        : props.highlightStyle
-      : props.style;
+    !!range && !!range.style ? range.style : props.highlightStyle;
   const getRangeKey = () =>
     `${props.id}-${!!props.range ? props.range.start : 0}-${props.charIndex}`;
   const getNormalKey = () => `${props.id}-${props.charIndex}`;

@@ -9,24 +9,15 @@ interface UrlNodeProps {
   charIndex: number;
   range: HightlightRange | null;
   url: string;
-  style?: object;
 }
 
 const UrlNode: React.FC<UrlNodeProps> = props => {
   const getStyle = (range?: HightlightRange | null) =>
-    !!range
-      ? !!range.style
-        ? range.style
-        : props.highlightStyle
-      : props.style;
+    !!range && !!range.style ? range.style : props.highlightStyle;
   return (
     <Node
       id={props.id}
-      highlightStyle={
-        !!props.range && props.range.style
-          ? props.range.style
-          : getStyle(props.range)
-      }
+      highlightStyle={getStyle(props.range)}
       charIndex={props.charIndex}
       range={props.range}
     >

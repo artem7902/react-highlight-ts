@@ -43,7 +43,10 @@ describe('Highlightable component with text as string', function () {
       wrapper.find('span').forEach((w, index) => {
         const props: any = w.props();
         expect(props['data-position']).to.equal(index);
-        expect(props.style).to.equal(undefined);
+        expect(JSON.stringify(props.style)).to.equal(JSON.stringify({
+          backgroundColor: '#ffcc80',
+          enabled: true
+        }));
         expect(props.children).to.equal(text[index]);
       });
     });
@@ -84,7 +87,10 @@ describe('Highlightable component with text as string', function () {
           expect(props.children).to.equal(text[index]);
         } else {
           expect(props['data-position']).to.equal(index);
-          expect(props.style).to.equal(undefined);
+          expect(JSON.stringify(props.style)).to.equal(JSON.stringify({
+            backgroundColor: '#ffcc80',
+            enabled: true
+          }));
           expect(props.children).to.equal(text[index]);
         }
       });
@@ -129,7 +135,10 @@ describe('Highlightable component with text as string', function () {
       wrapper.find('span').forEach((w, index) => {
         const props: any = w.props();
         expect(props['data-position']).to.equal(index);
-        expect(props.style).to.equal(undefined);
+        expect(JSON.stringify(props.style)).to.equal(JSON.stringify({
+          backgroundColor: '#ffcc80',
+          enabled: true
+        }));
         expect(props.children).to.equal(text[index]);
       });
 
@@ -304,7 +313,10 @@ describe('Highlightable component with text as react component', function () {
       wrapper.find('span').forEach((w, index) => {
         const props: any = w.props();
         expect(props['data-position']).to.equal(index);
-        expect(props.style).to.equal(undefined);
+        expect(JSON.stringify(props.style)).to.equal(JSON.stringify({
+          backgroundColor: '#ffcc80',
+          enabled: true
+        }));
       });
     });
   });
@@ -381,7 +393,10 @@ describe('Highlightable component with text as react component', function () {
       wrapper.find('span').forEach((w, index) => {
         const props: any = w.props();
         expect(props['data-position']).to.equal(index);
-        expect(props.style).to.equal(undefined);
+        expect(JSON.stringify(props.style)).to.equal(JSON.stringify({
+          backgroundColor: '#ffcc80',
+          enabled: true
+        }));
         //expect(props.children).to.equal(text[index]);
       });
 

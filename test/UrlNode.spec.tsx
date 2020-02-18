@@ -18,5 +18,33 @@ describe('UrlNode component', function () {
       expect(a.props["data-position"]).to.equal(0+url.length);
       expect(a.props["href"]).to.equal(url);
     });
+    it('should use range style as highlightStyle', () => {
+      const expectedStyle = {
+        color: "black"
+      };
+      const url = "https://www.google.com";
+      const wrapper = mount(<UrlNode id="test-id" charIndex={0}
+      highlightStyle={{
+        color: "white"
+      }}
+      range={{
+        start: 0, end: 4, text: "test", data: {}, style: expectedStyle
+      }} url={url}>test</UrlNode>);
+      const node = wrapper.find('span').get(0);
+      expect(node.props.style).to.equal(expectedStyle);
+    });
+    it('should use passed highlightStyle as highlightStyle', () => {
+      const expectedStyle = {
+        color: "white"
+      };
+      const url = "https://www.google.com";
+      const wrapper = mount(<UrlNode id="test-id" charIndex={0}
+      highlightStyle={expectedStyle}
+      range={{
+        start: 0, end: 4, text: "test", data: {}
+      }} url={url}>test</UrlNode>);
+      const node = wrapper.find('span').get(0);
+      expect(node.props.style).to.equal(expectedStyle);
+    });
   });
 });
