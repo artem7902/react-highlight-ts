@@ -1,6 +1,6 @@
 {
   "name": "@artem7902/highlightable-ts",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "Component that help highlighting text",
   "main": "lib/highlightable-ts.js",
   "types": "lib/index.d.ts",
