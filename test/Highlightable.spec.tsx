@@ -1000,5 +1000,67 @@ describe('Test Highlightable component methods', function () {
         expect(ranges.length).to.equal(2);
     });
   });
+  describe('mouseEvent method', function () {
+    it('selection.toString() is empty or undefined', () => {
+      const onMouseOverHighlightedWord = sinon.spy();
+      const onTextHighlighted = sinon.spy();
+      const range: any[] = [];
+      const text = "Test";
+      // Add selection Object manually
+      const selection = new SelectionImpl();
+      selection.toString = () => "";
+      const anyGlobal: any = global;
+      anyGlobal.window.getSelection = () => selection;
+      const wrapper = mount(<Highlightable
+          ranges={range}
+          enabled={true}
+          onTextHighlighted={onTextHighlighted}
+          id={'test'}
+          onMouseOverHighlightedWord={onMouseOverHighlightedWord}
+          rangeRenderer={(a, b) => b}
+          highlightStyle={{
+            backgroundColor: '#ffcc80',
+            enabled: true
+          }}
+          text={text}
+        />);
+        const componentInstance = wrapper.instance() as any as HighlightableComponentModel;
+        const result = componentInstance.mouseEvent();
+        expect(!!result).to.equal(false);
+    });
+    it('selection start container and end container have parent nodes', () => {
+      const onMouseOverHighlightedWord = sinon.spy();
+      const onTextHighlighted = sinon.spy();
+      const range: any[] = [];
+      const text = <div><p>Test</p></div>;
+      const wrapper = mount(<Highlightable
+          ranges={range}
+          enabled={true}
+          onTextHighlighted={onTextHighlighted}
+          id={'test'}
+          onMouseOverHighlightedWord={onMouseOverHighlightedWord}
+          rangeRenderer={(a, b) => b}
+          highlightStyle={{
+            backgroundColor: '#ffcc80',
+            enabled: true
+          }}
+          text={text}
+        />);
+        const firstPNode = wrapper.find('p').first().getDOMNode();
+        // Add selection Object manually
+        const selection = new SelectionImpl();
+        selection.toString = () => "Test";
+        const selectionRange = new RangeImpl();
+        selectionRange.setStart(firstPNode, 0);
+        selectionRange.setEnd(firstPNode, 5);
+        selection.addRange(selectionRange)
+        const anyGlobal: any = global;
+        anyGlobal.window.getSelection = () => selection;
+        const componentInstance = wrapper.instance() as any as HighlightableComponentModel;
+        const result = componentInstance.mouseEvent();
+        expect(onTextHighlighted.calledOnce).to.equal(true);
+        expect(!!result).to.equal(false);
+    });
+  });
 });
 
